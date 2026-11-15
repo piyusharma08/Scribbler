@@ -1,0 +1,10 @@
+streamlit>=1.38
+yfinance>=0.2.40
+pandas>=2.0
+plotly>=5.20
+feedparser>=6.0
+
+# Optional: bonus candlestick-pattern signal in screener/technical.py.
+# Not installed by default (unavailable on some indices/offline mirrors);
+# the app works fully without it. Uncomment if your pip index has it:
+# pandas-ta>=0.3.14b0
