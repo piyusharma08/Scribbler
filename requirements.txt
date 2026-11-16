@@ -3,6 +3,15 @@ yfinance>=0.2.40
 pandas>=2.0
 plotly>=5.20
 feedparser>=6.0
+requests>=2.28
+sentence-transformers>=3.0
+transformers>=4.30
+
+# sentence-transformers / transformers pull in torch - first run downloads
+# the embedding model (~90MB) and FinBERT (~400MB) plus torch itself, which
+# is slower and heavier than the rest of this app's dependencies. If
+# unavailable (no internet, no disk), news matching falls back to the regex
+# matcher and sentiment falls back to a keyword lexicon - see screener/news.py.
 
 # Optional: bonus candlestick-pattern signal in screener/technical.py.
 # Not installed by default (unavailable on some indices/offline mirrors);
