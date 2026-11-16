@@ -16,6 +16,41 @@ def fetch_history(ticker: str, period: str = "6mo", interval: str = "1d"):
         return None
 
 
+_INFO_FIELDS = {
+    "currentPrice": "Current Price",
+    "previousClose": "Previous Close",
+    "marketCap": "Market Cap",
+    "trailingPE": "P/E (TTM)",
+    "fiftyTwoWeekHigh": "52W High",
+    "fiftyTwoWeekLow": "52W Low",
+    "averageVolume": "Avg Volume",
+    "sector": "Sector",
+    "industry": "Industry",
+    "dividendYield": "Dividend Yield",
+    "beta": "Beta",
+}
+
+
+@st.cache_data(ttl=900, show_spinner=False)
+def fetch_info(ticker: str) -> dict:
+    """Curated subset of yfinance's Ticker.info for display. Missing fields
+    are omitted rather than erroring - yfinance's info coverage varies
+    per-stock (e.g. smaller/less-covered names often lack P/E or beta)."""
+    try:
+        info = yf.Ticker(ticker).info or {}
+    except Exception:
+        info = {}
+
+    out = {label: info.get(key) for key, label in _INFO_FIELDS.items()}
+
+    price = out.get("Current Price")
+    prev_close = out.get("Previous Close")
+    if price is not None and prev_close:
+        out["Day Change %"] = round((price - prev_close) / prev_close * 100, 2)
+
+    return out
+
+
 def fetch_many(tickers, period="6mo", interval="1d", max_workers=8, progress_cb=None):
     """Fetch history for many tickers concurrently. Returns dict(ticker -> df)."""
     from concurrent.futures import ThreadPoolExecutor, as_completed

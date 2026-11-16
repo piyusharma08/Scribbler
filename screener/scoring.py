@@ -1,8 +1,11 @@
 """Combine technical + news scores into a ranked result set."""
 from .news import news_component_score
 
+WEIGHT_TECHNICAL = 0.6
+WEIGHT_NEWS = 0.4
 
-def combine(symbol, tech_result, news_result, require_news: bool, weight_tech=0.6, weight_news=0.4):
+
+def combine(symbol, tech_result, news_result, require_news: bool, weight_tech=WEIGHT_TECHNICAL, weight_news=WEIGHT_NEWS):
     """Return a result row dict, or None if it should be filtered out."""
     if tech_result is None:
         return None
@@ -24,7 +27,10 @@ def combine(symbol, tech_result, news_result, require_news: bool, weight_tech=0.
         "signals": tech_result["signals"],
         "news_mentioned": news_mentioned,
         "news_score": news_score,
+        "sentiment_score": news_result["sentiment_score"] if news_result else 0.0,
+        "sentiment_label": news_result.get("sentiment_label", "neutral") if news_result else "neutral",
         "headlines": news_result["headlines"] if news_result else [],
+        "possible_headlines": news_result.get("possible_headlines", []) if news_result else [],
         "final_score": round(final_score, 1),
     }
 
